@@ -42,7 +42,7 @@
     ))
 
 
-(defun calc-stability-margin-max-point-from-support-polygon-vertices (spv-list &key (epsilon 0.0)) ;; epsilon>=0
+(defun calc-stability-margin-max-point-from-support-polygon-vertices (spv-list &key (epsilon 0.0)) ;; epsilon>=0 or epsilon=nil (disable)
 ;; (defun make-dist-xy-each-line-list-from-support-polygon-vertices
   (let* (xi yi xi1 yi1 naihou-inequality-matrix naihou-inequality-max-vector di ai bi ci abc-dist-list aj bj cj stability-margin-max-list stability-margin-max-list-final)
     (dotimes (i (length spv-list))
@@ -83,10 +83,16 @@
             (push (- (- ci cj)) lp-inequality-max-vector-i)
             )
           )
-        ;; (setq lp-inequality-matrix-i (append lp-inequality-matrix-i naihou-inequality-matrix))
-        ;; (setq lp-inequality-max-vector-i (append lp-inequality-max-vector-i naihou-inequality-max-vector))
-        (setq lp-inequality-matrix-i (append lp-inequality-matrix-i naihou-inequality-matrix (list (list 0 -1) (list 0 1))))
-        (setq lp-inequality-max-vector-i (append lp-inequality-max-vector-i naihou-inequality-max-vector (list epsilon epsilon)))
+        (if epsilon
+            (progn
+              (setq lp-inequality-matrix-i (append lp-inequality-matrix-i naihou-inequality-matrix (list (list 0 -1) (list 0 1))))
+              (setq lp-inequality-max-vector-i (append lp-inequality-max-vector-i naihou-inequality-max-vector (list epsilon epsilon)))
+              )
+          (progn
+            (setq lp-inequality-matrix-i (append lp-inequality-matrix-i naihou-inequality-matrix))
+            (setq lp-inequality-max-vector-i (append lp-inequality-max-vector-i naihou-inequality-max-vector))
+            )
+          )
         (setq lp-inequality-matrix-i (reverse lp-inequality-matrix-i))
         (setq lp-inequality-max-vector-i (coerce (reverse lp-inequality-max-vector-i) float-vector))
         (warn "lp-inequality-matrix-~a = ~a~%" i lp-inequality-matrix-i)
